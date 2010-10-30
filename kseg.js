@@ -102,21 +102,27 @@ function drawLine(){
 	//get the two selected points
 	var pointIter = 0;
 	var foundFirst = 0;
+	var firstX;
+	var firstY;
 	for(pointIter = 0; pointIter < pointArray.length; pointIter += 1){
 		if(pointArray[pointIter].selected === 1){
 			if(foundFirst === 0){
-				drawingContext.moveTo(pointArray[pointIter].x, pointArray[pointIter].y);
+				drawingContext.moveTo(pointArray[pointIter].x - 100, pointArray[pointIter].y);
 				foundFirst = 1;
+				firstX = pointArray[pointIter].x;
+				firstY = pointArray[pointIter].y;
 				flipPointState(pointIter);
 			}
 			else{
 				drawingContext.lineTo(pointArray[pointIter].x, pointArray[pointIter].y);
-				drawingContext.stroke();
+				drawingContext.closePath();
 				flipPointState(pointIter);
-				return;
+				drawingContext.stroke();
 			}
 		}
 	}
+	drawingContext.lineTo(firstX, firstY);
+	drawingContext.stroke();
 }
 
 function deleteSelected(){
@@ -154,7 +160,7 @@ function planeClick(e){
 		if(iconNum < 1){
 			deleteSelected();
 		}
-		else if(iconNum >= 1 && iconNum < 2 && selectedPoints == 2){
+		else if(iconNum >= 1 && iconNum < 2 && selectedPoints >= 2){
 			drawLine();
 		}
 	}
@@ -173,7 +179,7 @@ function planeClick(e){
 	}
 	if(selectedPoints > 0){
 		drawingContext.drawImage(deleteIcon, deletePosX, deletePosY);
-		if(selectedPoints == 2){
+		if(selectedPoints >= 2){
 			drawingContext.drawImage(drawLineIcon, drawLinePosX, drawLinePosY);
 		}
 		else{
@@ -194,6 +200,7 @@ function initPlane(){
 	document.body.appendChild(planeCanvas);
 	planeCanvas.width = planeSize;
 	planeCanvas.height = planeSize;
+	planeCanvas.setAttribute("class", "planeClass");
 	planeCanvas.addEventListener("click", planeClick, false);
 	drawingContext = planeCanvas.getContext("2d");
 	drawingContext.drawImage(drawLineXIcon, drawLinePosX, drawLinePosY);
