@@ -43,6 +43,56 @@ var iconSize = 50;
 	var perpLineXIcon = new Image();
 	perpLineXIcon.src = 'perpLineX.gif';
 	
+function updateDisplay(){
+	//draw points
+	var pointIter = 0;
+	for(pointIter = 0; pointIter < pointArray.length; pointIter += 1){
+		var x = pointArray[pointIter].x;
+		var y = pointArray[pointIter].y;
+		if(pointArray[pointIter].selected == 1 && pointArray[pointIter].deleted != 1){
+			drawingContext.fillStyle = "rgb(200, 0, 0)";
+			drawingContext.beginPath();
+			drawingContext.arc(x, y, pointSize, 0, twoPi, true);
+			drawingContext.fill();
+			drawingContext.fillStyle = "rgb(0, 0, 0)";
+			drawingContext.closePath();
+		}
+		else if(pointArray[pointIter].deleted == 1){
+			drawingContext.fillStyle = "rgb(255, 255, 255)";
+			drawingContext.strokeStyle = "rgb(255, 255, 255)";
+			drawingContext.beginPath();
+			drawingContext.arc(x, y, pointSize, 0, twoPi, true);
+			drawingContext.fill();
+			drawingContext.stroke();
+			drawingContext.fillStyle = "rgb(0, 0, 0)";
+			drawingContext.strokeStyle = "rgb(0, 0, 0)";
+			drawingContext.closePath();
+		}
+		else{
+			drawingContext.beginPath();
+			drawingContext.arc(x, y, pointSize, 0, twoPi, true);
+			drawingContext.fill();
+			drawingContext.closePath();
+		}
+	}
+		
+	//draw icons
+	if(selectedPoints > 0){
+		drawingContext.drawImage(deleteIcon, deletePosX, deletePosY);
+		if(selectedPoints >= 2){
+			drawingContext.drawImage(drawLineIcon, drawLinePosX, drawLinePosY);
+		}
+		else{
+			drawingContext.drawImage(drawLineXIcon, drawLinePosX, drawLinePosY);
+		}
+	}
+	else{
+		drawingContext.drawImage(deleteXIcon, deletePosX, deletePosY);
+		drawingContext.drawImage(drawLineXIcon, drawLinePosX, drawLinePosY);
+	}
+	
+}
+	
 function getCursorPosition(e){
 	var posArray = [];
 	posArray.x = 0;
@@ -57,6 +107,27 @@ function getCursorPosition(e){
 	posArray.x -= planeCanvas.offsetLeft;
 	posArray.y -= planeCanvas.offsetTop;
 	return posArray;
+}
+
+function flipPointState(index){
+	var x = pointArray[index].x;
+	var y = pointArray[index].y;
+	if(pointArray[index].selected === 0){
+		/*drawingContext.fillStyle = "rgb(200, 0, 0)";
+		drawingContext.beginPath();
+		drawingContext.arc(x, y, pointSize, 0, twoPi, true);
+		drawingContext.stroke();
+		drawingContext.fillStyle = "rgb(0, 0, 0)";*/
+		pointArray[index].selected = 1;
+		selectedPoints += 1;
+	}
+	else if(pointArray[index].selected == 1){
+		/*drawingContext.beginPath();
+		drawingContext.arc(x, y, pointSize, 0, twoPi, true);
+		drawingContext.stroke();*/
+		pointArray[index].selected = 0;
+		selectedPoints -= 1;
+	}
 }
 
 function pointExists(posArray){
@@ -74,27 +145,6 @@ function pointExists(posArray){
 		}
 	}
 	return false;
-}
-
-function flipPointState(index){
-	var x = pointArray[index].x;
-	var y = pointArray[index].y;
-	if(pointArray[index].selected === 0){
-		drawingContext.fillStyle = "rgb(200, 0, 0)";
-		drawingContext.beginPath();
-		drawingContext.arc(x, y, pointSize, 0, twoPi, true);
-		drawingContext.stroke();
-		drawingContext.fillStyle = "rgb(0, 0, 0)";
-		pointArray[index].selected = 1;
-		selectedPoints += 1;
-	}
-	else if(pointArray[index].selected == 1){
-		drawingContext.beginPath();
-		drawingContext.arc(x, y, pointSize, 0, twoPi, true);
-		drawingContext.stroke();
-		pointArray[index].selected = 0;
-		selectedPoints -= 1;
-	}
 }
 
 function drawLine(){
@@ -136,18 +186,21 @@ function deleteSelected(){
 		x = pointArray[pointIter].x;
 		y = pointArray[pointIter].y;
 		if(pointArray[pointIter].selected === 1){
-			drawingContext.fillStyle = "rgb(255, 255, 255)";
+			pointArray[pointIter].deleted = 1;
+			pointArray[pointIter].selected = 0;
+			selectedPoints -= 1;
+			/*drawingContext.fillStyle = "rgb(255, 255, 255)";
 			drawingContext.strokeStyle = "rgb(255, 255, 255)";
 			drawingContext.beginPath();
 			drawingContext.arc(x, y, pointSize+1, 0, twoPi, true);
 			drawingContext.fill();
 			drawingContext.stroke();
 			drawingContext.fillStyle = "rgb(0, 0, 0)";
-			drawingContext.strokeStyle = "rgb(0, 0, 0)";
+			drawingContext.strokeStyle = "rgb(0, 0, 0)";*/
 		}
-		else{
+		/*else{
 			tempArray.push(pointArray[pointIter]);
-		}
+		}*/
 		pointIter += 1;
 	}
 
@@ -170,27 +223,15 @@ function planeClick(e){
 	else if(pointExists(posArray) === false){
 			var x = posArray.x;
 			var y = posArray.y;
-			drawingContext.fillStyle = "rgb(0, 0, 0)";
+			/*drawingContext.fillStyle = "rgb(0, 0, 0)";
 			drawingContext.beginPath();
 			drawingContext.arc(x, y, pointSize, 0, twoPi, true);
-			drawingContext.stroke();
+			drawingContext.stroke();*/
 			posArray.selected = 0;
 			pointArray.push(posArray);
 	}
-	if(selectedPoints > 0){
-		drawingContext.drawImage(deleteIcon, deletePosX, deletePosY);
-		if(selectedPoints >= 2){
-			drawingContext.drawImage(drawLineIcon, drawLinePosX, drawLinePosY);
-		}
-		else{
-			drawingContext.drawImage(drawLineXIcon, drawLinePosX, drawLinePosY);
-		}
-	}
-	else{
-		drawingContext.drawImage(deleteXIcon, deletePosX, deletePosY);
-		drawingContext.drawImage(drawLineXIcon, drawLinePosX, drawLinePosY);
-	}
-	
+
+	updateDisplay();
 }
 
 
