@@ -4,7 +4,7 @@ var drawingContext;
 var planeSize = 1000;
 
 var twoPi = Math.PI * 2;
-var pointSize = 15;
+var pointSize = 10;
 
 var pointArray = [];
 var selectedPoints = 0;
@@ -77,18 +77,18 @@ function updateDisplay(){
 	}
 		
 	//draw icons
+	drawingContext.drawImage(deleteXIcon, deletePosX, deletePosY);
+	drawingContext.drawImage(drawLineXIcon, drawLinePosX, drawLinePosY);
+	drawingContext.drawImage(midpointXIcon, midpointPosX, midpointPosY);
+	drawingContext.drawImage(perpLineXIcon, perpLinePosX, perpLinePosY);	
 	if(selectedPoints > 0){
 		drawingContext.drawImage(deleteIcon, deletePosX, deletePosY);
-		if(selectedPoints >= 2){
-			drawingContext.drawImage(drawLineIcon, drawLinePosX, drawLinePosY);
-		}
-		else{
-			drawingContext.drawImage(drawLineXIcon, drawLinePosX, drawLinePosY);
-		}
 	}
-	else{
-		drawingContext.drawImage(deleteXIcon, deletePosX, deletePosY);
-		drawingContext.drawImage(drawLineXIcon, drawLinePosX, drawLinePosY);
+	if(selectedPoints >= 2){
+		drawingContext.drawImage(drawLineIcon, drawLinePosX, drawLinePosY);
+	}
+	if(selectedPoints == 2){
+		drawingContext.drawImage(midpointIcon, midpointPosX, midpointPosY);
 	}
 	
 }
@@ -172,15 +172,75 @@ function drawLine(){
 function deleteSelected(){
 	var pointIter = 0;
 	var pointArrayLen = pointArray.length;
-	while(pointIter < pointArrayLen){
+	var x;
+	var y;
+	while(pointArray[pointIter].selected != 1){
+		pointIter += 1;
+	}
+	
+	x = pointArray[pointIter].x;
+	y = pointArray[pointIter].y;
+	drawingContext.fillStyle = "rgb(255, 255, 255)";
+	drawingContext.strokeStyle = "rgb(255, 255, 255)";
+	drawingContext.beginPath();
+	drawingContext.arc(x, y, pointSize, 0, twoPi, true);
+	drawingContext.fill();
+	drawingContext.stroke();
+	drawingContext.fillStyle = "rgb(0, 0, 0)";
+	drawingContext.strokeStyle = "rgb(0, 0, 0)";
+	drawingContext.closePath();
+	//have to do this twice for some reason YIKES
+	drawingContext.fillStyle = "rgb(255, 255, 255)";
+	drawingContext.strokeStyle = "rgb(255, 255, 255)";
+	drawingContext.beginPath();
+	drawingContext.arc(x, y, pointSize, 0, twoPi, true);
+	drawingContext.fill();
+	drawingContext.stroke();
+	drawingContext.fillStyle = "rgb(0, 0, 0)";
+	drawingContext.strokeStyle = "rgb(0, 0, 0)";
+	drawingContext.closePath();
+	pointArray.splice(pointIter, 1);
+	selectedPoints -= 1;
+
+}
+
+function drawMidpoint(){
+	//first get the coordinates of the two points
+	var firstPosX;
+	var firstPosY;
+	var secondPosX;
+	var secondPosY;
+	var pointIter = 0;
+	var found = 0;
+	while(found < 2){
 		if(pointArray[pointIter].selected === 1){
-			pointArray[pointIter].deleted = 1;
-			pointArray[pointIter].selected = 0;
-			selectedPoints -= 1;
+			if(found === 0){
+				firstPosX = pointArray[pointIter].x;
+				firstPosY = pointArray[pointIter].y;
+				found = 1;
+				pointArray[pointIter].selected = 0;
+				selectedPoints -= 1;
+			}
+			if(found === 1){
+				secondPosX = pointArray[pointIter].x;
+				secondPosY = pointArray[pointIter].y;
+				found = 2;
+				pointArray[pointIter].selected = 0;
+				selectedPoints -= 1;
+			}
 		}
 		pointIter += 1;
 	}
-
+	
+	alert(firstPosX);
+	alert(secondPosX);
+	
+	var newPoint = [];
+	newPoint.x = (firstPosX + secondPosX) / 2;
+	newPoint.y = (firstPosY + secondPosY) / 2;
+	newPoint.selected = 0;
+	pointArray.push(newPoint);
+	
 }
 
 function planeClick(e){
@@ -192,6 +252,9 @@ function planeClick(e){
 		}
 		else if(iconNum >= 1 && iconNum < 2 && selectedPoints >= 2){
 			drawLine();
+		}
+		else if(iconNum >= 2 && iconNum < 3 && selectedPoints == 2){
+			drawMidpoint();
 		}
 	}
 	else if(pointExists(posArray) === false){
