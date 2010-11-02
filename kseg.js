@@ -6,6 +6,7 @@ var planeSize = 1000;
 var twoPi = Math.PI * 2;
 var pointSize = 10;
 
+var pointCounter = 0;
 var pointArray = [];
 var lineArray = [];
 var selectedPoints = 0;
