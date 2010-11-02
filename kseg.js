@@ -7,7 +7,9 @@ var twoPi = Math.PI * 2;
 var pointSize = 10;
 
 var pointArray = [];
+var lineArray = [];
 var selectedPoints = 0;
+var selectedLines = 0;
 
 //icon setup
 var iconSize = 50;
@@ -75,6 +77,21 @@ function updateDisplay(){
 			drawingContext.closePath();
 		}
 	}
+	
+	//draw lines
+	var lineIter = 0;
+	for(lineIter = 0; lineIter < lineArray.length; lineIter += 1){
+		var x1 = lineArray[lineIter].x1;
+		var x2 = lineArray[lineIter].x2;
+		var y1 = lineArray[lineIter].y1;
+		var y2 = lineArray[lineIter].y2;
+		drawingContext.beginPath();
+		drawingContext.moveTo(x1, y1);
+		drawingContext.lineTo(x2, y2);
+		drawingContext.closePath();
+		drawingContext.stroke();
+
+	}
 		
 	//draw icons
 	drawingContext.drawImage(deleteXIcon, deletePosX, deletePosY);
@@ -140,33 +157,44 @@ function pointExists(posArray){
 }
 
 function drawLine(){
-	drawingContext.beginPath();
 	//get the selected points
 	var pointIter = 0;
 	var foundFirst = 0;
 	var firstX;
 	var firstY;
+	var lastX;
+	var lastY;
 	for(pointIter = 0; pointIter < pointArray.length; pointIter += 1){
 		if(pointArray[pointIter].selected === 1){
 			if(foundFirst === 0){
-				drawingContext.moveTo(pointArray[pointIter].x, pointArray[pointIter].y);
 				foundFirst = 1;
 				firstX = pointArray[pointIter].x;
+				lastX = pointArray[pointIter].x;
 				firstY = pointArray[pointIter].y;
+				lastY = pointArray[pointIter].y;
 				flipPointState(pointIter);
 			}
 			else{
-				drawingContext.lineTo(pointArray[pointIter].x, pointArray[pointIter].y);
-				drawingContext.closePath();
+				var newLine = [];
+				newLine.x1 = lastX;
+				newLine.y1 = lastY;
+				newLine.x2 = pointArray[pointIter].x;
+				newLine.y2 = pointArray[pointIter].y;
 				flipPointState(pointIter);
-				drawingContext.stroke();
-				drawingContext.moveTo(pointArray[pointIter].x, pointArray[pointIter].y);
+				newLine.selected = 0;
+				lineArray.push(newLine);
+				lastX = pointArray[pointIter].x;
+				lastY = pointArray[pointIter].y;
 			}
 		}
 	}
-	drawingContext.lineTo(firstX, firstY);
-	drawingContext.stroke();
-	drawingContext.closePath();
+	var newLine = [];
+	newLine.x1 = lastX;
+	newLine.x2 = firstX;
+	newLine.y1 = lastY;
+	newLine.y2 = firstY;
+	newLine.selected = 1;
+	lineArray.push(newLine);
 }
 
 function deleteSelected(){
