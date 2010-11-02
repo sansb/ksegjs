@@ -217,23 +217,19 @@ function drawMidpoint(){
 			if(found === 0){
 				firstPosX = pointArray[pointIter].x;
 				firstPosY = pointArray[pointIter].y;
-				found = 1;
 				pointArray[pointIter].selected = 0;
 				selectedPoints -= 1;
 			}
 			if(found === 1){
 				secondPosX = pointArray[pointIter].x;
 				secondPosY = pointArray[pointIter].y;
-				found = 2;
 				pointArray[pointIter].selected = 0;
 				selectedPoints -= 1;
 			}
+			found += 1;
 		}
 		pointIter += 1;
 	}
-	
-	alert(firstPosX);
-	alert(secondPosX);
 	
 	var newPoint = [];
 	newPoint.x = (firstPosX + secondPosX) / 2;
