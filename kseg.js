@@ -1,10 +1,11 @@
+var twoPi = Math.PI * 2;
+var pointSize = 7;
+
+function ksegPlane(id){
 //global setup
 var planeCanvas;
 var drawingContext;
 var planeSize = 1000;
-
-var twoPi = Math.PI * 2;
-var pointSize = 10;
 
 var pointCounter = 0;
 var pointArray = [];
@@ -293,10 +294,10 @@ function planeClick(e){
 }
 
 
-function initPlane(){
+this.initPlane = function(){
 	planeCanvas = document.createElement("canvas");
 	planeCanvas.id = "plane_canvas";
-	document.body.appendChild(planeCanvas);
+	document.getElementById(id).appendChild(planeCanvas);
 	planeCanvas.width = planeSize;
 	planeCanvas.height = planeSize;
 	planeCanvas.setAttribute("class", "planeClass");
@@ -306,4 +307,6 @@ function initPlane(){
 	drawingContext.drawImage(deleteXIcon, deletePosX, deletePosY);
 	drawingContext.drawImage(midpointXIcon, midpointPosX, midpointPosY);
 	drawingContext.drawImage(perpLineXIcon, perpLinePosX, perpLinePosY);
+}
+
 }
